@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/userdb';
+const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 app.use(cors());
@@ -38,9 +38,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 // Routes
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'index.html'));
-});
+
 
 // API: Get by number
 app.get('/api/users/:number', async (req, res) => {

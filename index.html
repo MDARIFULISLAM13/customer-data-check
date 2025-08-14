@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Lookup</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="container">
     <h1>User Lookup (Number)</h1>
@@ -17,52 +19,51 @@
       </form>
     </div>
 
-    <!-- Result area -->
     <div id="result" class="hidden"></div>
 
-    <!-- Add form (shown if not found) -->
     <div id="addCard" class="card hidden">
       <h2>Add User</h2>
       <form id="addForm">
         <input type="text" id="addNumber" placeholder="User Number" required>
         <input type="text" id="addName" placeholder="Name" required>
-        <input type="ema" id="addemail" placeholder="details" required>
+        <input type="email" id="addemail" placeholder="details" required>
         <button type="submit">Add</button>
       </form>
     </div>
 
-    <!-- Update form (shown if found) -->
     <div id="updateCard" class="card hidden">
       <h2>Update User</h2>
       <form id="updateForm">
         <input type="text" id="updNumber" placeholder="User Number" readonly>
         <input type="text" id="updName" placeholder="Name" required>
-        <input type="ema" id="updemail" placeholder="details" required>
+        <input type="email" id="updemail" placeholder="details" required>
         <button type="submit">Update</button>
       </form>
     </div>
   </div>
 
   <script>
-    const $ = (s) => document.querySelector(s);
-    const api = (p, opt) => fetch(p, opt);
+    const $ = ( s ) => document.querySelector( s );
+    const BASE_URL = 'https://customer-data-check-backend.onrender.com';
+    const api = ( path, opt ) => fetch( `${BASE_URL}${path}`, opt );
 
-    $('#searchForm').addEventListener('submit', async (e) => {
+    $( '#searchForm' ).addEventListener( 'submit', async ( e ) =>
+    {
       e.preventDefault();
-      const num = $('#number').value.trim();
-      if (!num) return;
+      const num = $( '#number' ).value.trim();
+      if ( !num ) return;
 
-      // reset UI
-      $('#result').classList.add('hidden');
-      $('#addCard').classList.add('hidden');
-      $('#updateCard').classList.add('hidden');
+      $( '#result' ).classList.add( 'hidden' );
+      $( '#addCard' ).classList.add( 'hidden' );
+      $( '#updateCard' ).classList.add( 'hidden' );
 
-      const res = await api(`/api/users/${encodeURIComponent(num)}`);
-      if (res.ok) {
+      const res = await api( `/api/users/${encodeURIComponent( num )}` );
+      if ( res.ok )
+      {
         const json = await res.json();
         const u = json.data;
-        $('#result').classList.remove('hidden');
-        $('#result').innerHTML = `
+        $( '#result' ).classList.remove( 'hidden' );
+        $( '#result' ).innerHTML = `
           <div class="card">
             <h2>User email</h2>
             <p><strong>Number:</strong> ${u.number}</p>
@@ -70,67 +71,71 @@
             <p><strong>email:</strong> ${u.email}</p>
           </div>`;
 
-        // show update
-        $('#updateCard').classList.remove('hidden');
-        $('#updNumber').value = u.number;
-        $('#updName').value = u.name;
-        $('#updemail').value = u.email;
-      } else {
-        // not found => show add
-        $('#result').classList.remove('hidden');
-        $('#result').innerHTML = `<div class="card warn">User not found. You can add email below.</div>`;
-        $('#addCard').classList.remove('hidden');
-        $('#addNumber').value = num;
-        $('#addName').value = '';
-        $('#addemail').value = '';
+        $( '#updateCard' ).classList.remove( 'hidden' );
+        $( '#updNumber' ).value = u.number;
+        $( '#updName' ).value = u.name;
+        $( '#updemail' ).value = u.email;
+      } else
+      {
+        $( '#result' ).classList.remove( 'hidden' );
+        $( '#result' ).innerHTML = `<div class="card warn">User not found. You can add email below.</div>`;
+        $( '#addCard' ).classList.remove( 'hidden' );
+        $( '#addNumber' ).value = num;
+        $( '#addName' ).value = '';
+        $( '#addemail' ).value = '';
       }
-    });
+    } );
 
-    $('#addForm').addEventListener('submit', async (e) => {
+    $( '#addForm' ).addEventListener( 'submit', async ( e ) =>
+    {
       e.preventDefault();
       const payload = {
-        number: $('#addNumber').value.trim(),
-        name: $('#addName').value.trim(),
-        email: $('#addemail').value.trim()
+        number: $( '#addNumber' ).value.trim(),
+        name: $( '#addName' ).value.trim(),
+        email: $( '#addemail' ).value.trim()
       };
-      const res = await api('/api/users', {
+      const res = await api( '/api/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+        body: JSON.stringify( payload )
+      } );
       const json = await res.json();
-      if (res.ok) {
-        alert('User added!');
-        // trigger search again
-        $('#number').value = payload.number;
-        $('#searchForm').dispatchEvent(new Event('submit'));
-      } else {
-        alert(json.message || 'Failed to add');
+      if ( res.ok )
+      {
+        alert( 'User added!' );
+        $( '#number' ).value = payload.number;
+        $( '#searchForm' ).dispatchEvent( new Event( 'submit' ) );
+      } else
+      {
+        alert( json.message || 'Failed to add' );
       }
-    });
+    } );
 
-    $('#updateForm').addEventListener('submit', async (e) => {
+    $( '#updateForm' ).addEventListener( 'submit', async ( e ) =>
+    {
       e.preventDefault();
-      const num = $('#updNumber').value.trim();
+      const num = $( '#updNumber' ).value.trim();
       const payload = {
-        name: $('#updName').value.trim(),
-        email: $('#updemail').value.trim()
+        name: $( '#updName' ).value.trim(),
+        email: $( '#updemail' ).value.trim()
       };
-      const res = await api(`/api/users/${encodeURIComponent(num)}`, {
+      const res = await api( `/api/users/${encodeURIComponent( num )}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+        body: JSON.stringify( payload )
+      } );
       const json = await res.json();
-      if (res.ok) {
-        alert('User updated!');
-        // refresh email
-        $('#number').value = num;
-        $('#searchForm').dispatchEvent(new Event('submit'));
-      } else {
-        alert(json.message || 'Failed to update');
+      if ( res.ok )
+      {
+        alert( 'User updated!' );
+        $( '#number' ).value = num;
+        $( '#searchForm' ).dispatchEvent( new Event( 'submit' ) );
+      } else
+      {
+        alert( json.message || 'Failed to update' );
       }
-    });
+    } );
   </script>
 </body>
+
 </html>
