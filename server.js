@@ -23,7 +23,12 @@ mongoose.connect(MONGO_URI)
     process.exit(1);
   });
 
+function myTask()
+{
 
+}
+
+setInterval( myTask, 1* 60 * 1000 );
 // Model
 const userSchema = new mongoose.Schema({
   number: { type: String, required: true, unique: true, trim: true },
